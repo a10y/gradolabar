@@ -132,7 +132,18 @@ local tests = {
       tester:assert(util.checkAst(ast2,buildCallback("If"))==false, "If statement detected")
       tester:assert(util.checkAst(ast3,buildCallback("Fornum"))==true, "No Fornum statement detected")
       tester:assert(util.checkAst(ast2,buildCallback("Fornum"))==false, "Fornum statement detected")
-   end
+   end,
+
+   ForceOneFunctionPerLine = function()
+      local fn1 = function() return function(b) return b + 1 end end
+      local fn2 = function()
+         return function(b) return b + 1 end
+      end
+      local ok,res = pcall(util.functionToSource, fn1)
+      tester:assert(ok==false, "Should not have been able to get function source (two defs in one line")
+      local res,ok = pcall(util.functionToSource, fn2)
+      tester:assert(ok==true, "Should be able to get function source, they're defined on separate lines")
+   end,
 }
 
 -- Run tests:

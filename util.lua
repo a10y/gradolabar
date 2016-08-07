@@ -4,13 +4,25 @@ local parser = require "lua-parser.parser"
 local pp = require "lua-parser.pp"
 
 local function getfnsource(f)
+   -- TODO: at first occurence of keyword "function", check for a 2nd occurrence on same line
    fn_info = debug.getinfo(f)
    lines = {}
    iline = 0
    src = ""
    for line in io.lines(fn_info.short_src) do
       iline = iline + 1
+      seenFnDef = false
       if (fn_info.linedefined <= iline) and (iline <= fn_info.lastlinedefined) then
+         if not seenFnDef then
+            local _, count = string.gsub(line, "function", "")
+            if count == 1 then
+               seenFnDef = true
+            elseif count > 1 then
+               errstring = "The use of the keyword 'function' is only allowable once per line in this utility"
+               errstring = errstring .. "\n" .. " (limitations of Lua's function introspection capabilities)"
+               error(errstring)
+            end
+         end
          src = src .. line .. "\n"
       end
    end
