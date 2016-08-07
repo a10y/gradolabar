@@ -17,9 +17,18 @@ local function getfnsource(f)
    return src
 end
 
+local function isAstNode(node)
+   if type(node) == "table" and type(node.tag) == "string" then
+      return true
+   else
+      return false
+   end
+end
+
+
 local function checkAst(ast, checkFn)
    -- Check we've hit an AST node
-   if type(ast) ~= "table" or not ast.tag then
+   if isAstNode(ast) == false then
       return false
    end
 
@@ -45,6 +54,7 @@ local function sourceToAst(src)
    -- Check that we don't have two function definitions on the same line
    -- (the `debug` module in lua only provides line numbers, not text columns,
    -- so we can't determine which function's source we want if they're in the same line)
+   -- e.g. function makeIncrementFunction() return function(b) return b + 1 end end
    return ast
 end
 

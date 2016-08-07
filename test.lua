@@ -130,7 +130,8 @@ local tests = {
 
       tester:assert(util.checkAst(ast1,buildCallback("If"))==true, "No If statement detected")
       tester:assert(util.checkAst(ast2,buildCallback("If"))==false, "If statement detected")
-      tester:assert(util.checkAst(ast3,buildCallback("For"))==false, "No For statement detected")
+      tester:assert(util.checkAst(ast3,buildCallback("Fornum"))==true, "No Fornum statement detected")
+      tester:assert(util.checkAst(ast2,buildCallback("Fornum"))==false, "Fornum statement detected")
    end
 }
 
