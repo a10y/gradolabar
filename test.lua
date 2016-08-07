@@ -77,14 +77,13 @@ local tests = {
       local src = util.astToSource(util.sourceToAst(trueSource))
       tester:assert(trim(src)==trim(trueSource), "Didn't transform correctly)")
 
-   -- TODO: This fails ("local function f(a)" signature)
-      -- local trueSource = [[
-      -- local function f(a)
-         -- return a
-      -- end
--- ]]
-      -- local src = util.astToSource(util.sourceToAst(trueSource))
-      -- tester:assert(src, "Didn't transform correctly)")
+      local trueSource = [[
+      local function f(a)
+         return a
+      end
+]]
+      local src = util.astToSource(util.sourceToAst(trueSource))
+      tester:assert(trim(src)==trim(trueSource), "Didn't transform correctly)")
 
    end,
 
@@ -143,6 +142,18 @@ local tests = {
       tester:assert(ok==false, "Should not have been able to get function source (two defs in one line")
       local ok,res = pcall(util.functionToSource, fn2)
       tester:assert(ok==true, "Should be able to get function source, they're defined on separate lines")
+   end,
+
+   ReverseCallOrder = function()
+      -- TODO: reverse the call order of expressions
+   end,
+
+   FunctionReplacement = function()
+      -- TODO: do some really simple replacement of functions from a table
+   end,
+
+   ANormalForm = function()
+      -- TODO: lift all implicit temporary values to have explicit variable names
    end,
 }
 

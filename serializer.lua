@@ -15,7 +15,6 @@ end
 
 -- Convert AST into a string.
 local function convert(ast)
-  --print(ast.tag)
   return funcs[ast.tag](ast)
 end
 
@@ -89,7 +88,6 @@ function funcs.Forin(ast)
 end
 
 function funcs.FunctionDef(ast)
-  print("GOOD TIMES")
   return 'function ' .. convert(ast[1]) .. '(' .. convert(ast[2]) .. ') ' ..
          convert(ast[3]) .. ' end'
 end
@@ -97,6 +95,7 @@ end
 function funcs.LocalFunctionDef(ast)
   return 'local ' .. funcs.FunctionDef(ast)
 end
+
 
 function funcs.Local(ast)
   local cnames = {}
@@ -229,6 +228,13 @@ end
 function funcs.Function(ast)
   return 'function(' .. convert(ast[1]) .. ') \n' .. indentBody(convert(ast[2])) .. 'end'
 end
+
+function funcs.Localrec(ast)
+  local fnName = convert(ast[1][1])
+  local fn = ast[2]
+  return 'local function ' .. fnName .. '(' .. convert(fn[1][1]) .. ') \n' .. indentBody(convert(fn[1][2])) .. 'end'
+end
+
 
 function funcs.FuncName(ast)
   local ts = {}

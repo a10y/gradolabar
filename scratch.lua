@@ -1,12 +1,8 @@
 util = require 'util'
-local trueSource = [[
-   local f = function(a)
-      if a > 3 then
-         return a + 1
-      else
-         return a - 1
-      end
-   end
+trueSource = [[
+local function f(a)
+   return a
+end
 ]]
-ast = util.sourceToAst(trueSource)
-util.astprint(ast)
+src = util.astToSource(util.sourceToAst(trueSource))
+print(src)
