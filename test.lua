@@ -140,11 +140,8 @@ local tests = {
          return function(b) return b + 1 end
       end
       local ok,res = pcall(util.functionToSource, fn1)
-      print(ok==false)
       tester:assert(ok==false, "Should not have been able to get function source (two defs in one line")
       local ok,res = pcall(util.functionToSource, fn2)
-      print(ok)
-      print(ok==true)
       tester:assert(ok==true, "Should be able to get function source, they're defined on separate lines")
    end,
 }
