@@ -121,6 +121,7 @@ local tests = {
             return false
          end
       end
+
       local function buildCallback(nodeType)
          return function(node)
             return checkFn(node, nodeType)
@@ -145,7 +146,60 @@ local tests = {
    end,
 
    ReverseCallOrder = function()
-      -- TODO: reverse the call order of expressions
+      local src = [[
+      a = 3
+      b = 4
+      c = 5
+      ]]
+
+      local incrSrc = [[
+      a = 4
+      b = 5
+      c = 6
+      ]]
+
+      local reversedSrc = [[
+      c = 5
+      b = 4
+      a = 3
+      ]]
+
+
+      -- Identity function
+      local ast = util.sourceToAst(src)
+      local ast = util.mutateAst(ast, function(node) return node end)
+      tester:assert(trim(util.astToSource(ast))==trim(src), "Incorrect source transform")
+      local ast = util.mutateAst(ast, function(node) return nil end)
+      tester:assert(trim(util.astToSource(ast))==trim(src), "Incorrect source transform")
+
+      -- A simple transform
+      local ast = util.sourceToAst(src)
+      local incrNumber = function(node)
+         if node.tag == "Number" then
+            node[1] = node[1] + 1
+         end
+         return node
+      end
+      local ast = util.mutateAst(ast, incrNumber)
+      local newSrc = util.astToSource(ast)
+      tester:assert(trim(newSrc) == trim(incrSrc), "Incorrect source transform (incrementing number values)")
+
+      -- Reversing a block
+      local ast = util.sourceToAst(src)
+      local reverseBlock = function(node)
+         if node.tag == "Block" then
+            newOrder = {}
+            for i=#node,1,-1 do
+               newOrder[#newOrder+1] = node[i]
+            end
+            for i=1,#node do
+               node[i] = newOrder[i]
+            end
+         end
+      end
+      local ast = util.mutateAst(ast, reverseBlock)
+      local newSrc = util.astToSource(ast)
+      tester:assert(trim(newSrc) == trim(reversedSrc), "Incorrect source transform (expression order reversal)")
    end,
 
    FunctionReplacement = function()

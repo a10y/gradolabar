@@ -37,7 +37,6 @@ local function isAstNode(node)
    end
 end
 
-
 local function checkAst(ast, checkFn)
    -- Check we've hit an AST node
    if isAstNode(ast) == false then
@@ -59,14 +58,18 @@ local function checkAst(ast, checkFn)
    end
 end
 
-local function sourceToAst(src)
-   local ast = parser.parse(src)
-
-   -- TODO
-   -- Check that we don't have two function definitions on the same line
-   -- (the `debug` module in lua only provides line numbers, not text columns,
-   -- so we can't determine which function's source we want if they're in the same line)
-   -- e.g. function makeIncrementFunction() return function(b) return b + 1 end end
+-- TODO:
+-- Issue here is we can mutate a node in place in mutateFn and it
+-- it will still be placed in. Maybe that's not a problem? Feature not a bug?
+local function mutateAst(ast, mutateFn)
+   if isAstNode(ast) then
+      ast = mutateFn(ast) or ast -- if it returns nil, use the original node
+   else
+      return ast
+   end
+   for i=1,#ast do
+      ast[i] = mutateAst(ast[i], mutateFn)
+   end
    return ast
 end
 
@@ -78,6 +81,7 @@ return {
    functionToSource = getfnsource,
    sourceToAst = parser.parse,
    checkAst = checkAst,
+   mutateAst = mutateAst,
    astToSource = serializer.ast_to_code,
    astprint = function(src) print(pp.tostring(src)) end
 }
