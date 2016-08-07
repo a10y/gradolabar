@@ -5,4 +5,4 @@ function f(a)
 end
 ]]
 ast = util.sourceToAst(trueSource)
-util.printAst(ast)
+util.astprint(ast)

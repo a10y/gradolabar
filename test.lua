@@ -54,9 +54,6 @@ local tests = {
 ]]
       local ast = util.sourceToAst(trueSource)
       ast = ast[1]
-      -- print(ast)
-      -- print(ast[1])
-      -- os.exit()
       tester:assert(ast[1][1].tag == "Id", "Incorrect node type")
       tester:assert(ast[1][1][1] == "f", "Incorrect parsed function name")
       local fnAst = ast[2][1]
@@ -90,6 +87,51 @@ local tests = {
       -- tester:assert(src, "Didn't transform correctly)")
 
    end,
+
+   CheckForControlFlow = function()
+      local src1 = [[
+      local f = function(a)
+         if a > 3 then
+            return a + 1
+         else
+            return a - 1
+         end
+      end
+   ]]
+      local src2 = [[
+      local f = function(a)
+         return a + 1
+      end
+   ]]
+      local src3 = [[
+      local f = function(a)
+         for i=1,3 do
+            a = a + i
+         end
+         return a
+      end
+   ]]
+      local ast1 = util.sourceToAst(src1)
+      local ast2 = util.sourceToAst(src2)
+      local ast3 = util.sourceToAst(src3)
+
+      local function checkFn(node, nodeType)
+         if node.tag == nodeType then
+            return true
+         else
+            return false
+         end
+      end
+      local function buildCallback(nodeType)
+         return function(node)
+            return checkFn(node, nodeType)
+         end
+      end
+
+      tester:assert(util.checkAst(ast1,buildCallback("If"))==true, "No If statement detected")
+      tester:assert(util.checkAst(ast2,buildCallback("If"))==false, "If statement detected")
+      tester:assert(util.checkAst(ast3,buildCallback("For"))==false, "No For statement detected")
+   end
 }
 
 -- Run tests:
