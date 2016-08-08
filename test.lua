@@ -188,7 +188,7 @@ local tests = {
       local ast = util.sourceToAst(src)
       local reverseBlock = function(node)
          if node.tag == "Block" then
-            newOrder = {}
+            local newOrder = {}
             for i=#node,1,-1 do
                newOrder[#newOrder+1] = node[i]
             end
@@ -203,7 +203,47 @@ local tests = {
    end,
 
    FunctionReplacement = function()
-      -- TODO: do some really simple replacement of functions from a table
+      eye = torch.eye
+      sum = torch.sum
+      max = torch.max
+      local src = [[
+         local a = eye(3)
+         local b = sum(a)
+         return b
+      ]]
+      local modifiedsrc = [[
+         local a = zeros(3)
+         local b = max(a)
+         return b
+      ]]
+
+      local fns = {}
+      fns[sum] = "max"
+      fns[eye] = "zeros"
+
+      local ast = util.sourceToAst(src)
+      local replaceFns = function(node)
+         if node.tag == "Call" then
+            local functionNode = node[1]
+            print(util.astToSource(functionNode))
+            local fnHandle = util.getVarByName(node[1][1])
+            local newFnName = fns[fnHandle]
+            if newFnName then
+               functionNode[1] = newFnName
+               node[1] = functionNode
+            end
+         end
+         return node
+      end
+      local ast = util.mutateAst(ast, replaceFns)
+      local newSrc = util.astToSource(ast)
+      print("")
+      print(trim(newSrc))
+      print(trim(modifiedsrc))
+      tester:assert(trim(newSrc) == trim(modifiedsrc), "Incorrect modification of source")
+      eye = nil
+      sum = nil
+      max = nil
    end,
 
    ANormalForm = function()
