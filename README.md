@@ -1,7 +1,7 @@
 # gradolabar
 Experiments with source-to-source (S2S) automatic differentiation
 
-I wanted to see if I could build a S2S (also known as source-code transformation, or SCT) autodiff system. Turns out, Jeff Siskind has already done it (as usual), and I learned that at the ["Future of Gradient-based Machine Learning" workshop at NIPS 2016](autodiff-workshop.github.io). But, I still want to finish this little project for learning purposes.
+I wanted to see if I could build a S2S (also known as source-code transformation, or SCT) autodiff system. Turns out, Jeff Siskind has already done it (as usual), and I learned that at the ["Future of Gradient-based Machine Learning" workshop at NIPS 2016](https://autodiff-workshop.github.io). But, I still want to finish this little project for learning purposes.
 
 The three elements of a source-to-source automatic differentiation system:
 
